@@ -1,19 +1,19 @@
 # cloudbuild.yaml
 
 steps:
-  # 1) Build image
+  # 1) Build image to Container Registry (gcr.io)
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/learning-496718/javascript-tetris-2/javascript-tetris-2:$COMMIT_SHA'
+      - 'gcr.io/learning-496718/github.com/maxklema/javascript-tetris-2:$COMMIT_SHA'
       - '.'
 
-  # 2) Push image to Artifact Registry
+  # 2) Push image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/learning-496718/javascript-tetris-2/javascript-tetris-2:$COMMIT_SHA'
+      - 'gcr.io/learning-496718/github.com/maxklema/javascript-tetris-2:$COMMIT_SHA'
 
   # 3) Deploy image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -21,15 +21,15 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'javascript-tetris-2'         # Cloud Run service name
+      - 'javascript-tetris-2'  # Cloud Run service name
       - '--image'
-      - 'us-central1-docker.pkg.dev/learning-496718/javascript-tetris-2/javascript-tetris-2:$COMMIT_SHA'
+      - 'gcr.io/learning-496718/github.com/maxklema/javascript-tetris-2:$COMMIT_SHA'
       - '--region'
       - 'us-central1'
       - '--platform'
       - 'managed'
-      # optional, but good to specify:
-      # - '--allow-unauthenticated'
+      - '--allow-unauthenticated'
+      - '--quiet'
 
 images:
-  - 'us-central1-docker.pkg.dev/learning-496718/javascript-tetris-2/javascript-tetris-2:$COMMIT_SHA'
+  - 'gcr.io/learning-496718/github.com/maxklema/javascript-tetris-2:$COMMIT_SHA'
