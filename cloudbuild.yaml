@@ -1,19 +1,19 @@
 # cloudbuild.yaml
 
 steps:
-  # 1) Build image to Container Registry (gcr.io)
+  # 1) Build image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/learning-496718/github.com/maxklema/javascript-tetris-2:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/learning-496718/javascript-tetris-2/javascript-tetris-2:$COMMIT_SHA'
       - '.'
 
-  # 2) Push image
+  # 2) Push image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'gcr.io/learning-496718/github.com/maxklema/javascript-tetris-2:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/learning-496718/javascript-tetris-2/javascript-tetris-2:$COMMIT_SHA'
 
   # 3) Deploy image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -21,15 +21,18 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'javascript-tetris-2'  # Cloud Run service name
+      - 'javascript-tetris-2'         # Cloud Run service name
       - '--image'
-      - 'gcr.io/learning-496718/github.com/maxklema/javascript-tetris-2:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/learning-496718/javascript-tetris-2/javascript-tetris-2:$COMMIT_SHA'
       - '--region'
       - 'us-central1'
       - '--platform'
       - 'managed'
-      - '--allow-unauthenticated'
-      - '--quiet'
+      - '--allow-unauthenticated'     # Highly recommend uncommenting this!
 
 images:
-  - 'gcr.io/learning-496718/github.com/maxklema/javascript-tetris-2:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/learning-496718/javascript-tetris-2/javascript-tetris-2:$COMMIT_SHA'
+
+# Add this block to fix the logging error
+options:
+  logging: CLOUD_LOGGING_ONLY
